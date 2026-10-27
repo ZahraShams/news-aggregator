@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { getSourceName } from '../sources/registry';
 import type { Article, SourceId } from '../types/article';
 import ArticleCard from './ArticleCard';
+import ArticleSkeleton from './ArticleSkeleton';
 
 interface ArticleListProps {
   articles: Article[];
@@ -35,12 +36,13 @@ export default function ArticleList({
         </p>
       ))}
 
-      {loading && <p className="status">Loading articles…</p>}
+      {loading && <ArticleSkeleton />}
 
       {!loading && articles.length === 0 && <p className="status">{emptyMessage}</p>}
 
       {articles.length > 0 && (
         <>
+          <p className="result-count">{articles.length} articles</p>
           <div className="grid">
             {articles.map((article) => (
               <ArticleCard key={article.id} article={article} highlighted={isHighlighted?.(article)} />

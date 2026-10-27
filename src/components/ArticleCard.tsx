@@ -16,9 +16,19 @@ function ArticleCard({ article, highlighted = false }: ArticleCardProps) {
 
   return (
     <article className={highlighted ? 'card card--highlighted' : 'card'}>
-      {article.imageUrl && (
-        <img className="card__image" src={article.imageUrl} alt="" loading="lazy" />
-      )}
+      {/* The outlet's initial sits behind the image and shows when there is none or it fails to load. */}
+      <div className="card__media" aria-hidden="true">
+        <span className="card__placeholder">{article.outlet.charAt(0)}</span>
+        {article.imageUrl && (
+          <img
+            className="card__image"
+            src={article.imageUrl}
+            alt=""
+            loading="lazy"
+            onError={(event) => event.currentTarget.remove()}
+          />
+        )}
+      </div>
       <div className="card__body">
         <div className="card__meta">
           <span className={`badge badge--${article.source}`}>{article.outlet}</span>

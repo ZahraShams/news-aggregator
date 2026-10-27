@@ -29,7 +29,7 @@ export default function Header({ view, onViewChange, onCustomize }: HeaderProps)
         ))}
       </nav>
       <button type="button" className="header__customize" onClick={onCustomize}>
-        Customize feed
+        Customize
       </button>
     </header>
   );
