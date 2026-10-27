@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { mockFetch } from '../test/mockFetch';
 import { clearCache } from '../utils/http';
 import {
   buildGuardianUrl,
@@ -20,12 +21,6 @@ const result: GuardianResult = {
     thumbnail: 'https://media.guim.co.uk/example.jpg',
   },
 };
-
-function mockFetch(body: unknown, status = 200) {
-  const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status }));
-  vi.stubGlobal('fetch', fetchMock);
-  return fetchMock;
-}
 
 afterEach(() => {
   vi.unstubAllGlobals();
