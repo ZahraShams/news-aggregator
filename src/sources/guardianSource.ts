@@ -1,9 +1,8 @@
 import type { Article, ArticleQuery, Category } from '../types/article';
 import { stripHtml } from '../utils/format';
 import { buildUrl, getJson } from '../utils/http';
-import type { NewsSource, SourceResult } from './NewsSource';
+import type { NewsSource, SourceConfig, SourceResult } from './NewsSource';
 
-const BASE_URL = 'https://content.guardianapis.com/search';
 const PAGE_SIZE = 20;
 
 /** Our categories mapped to Guardian section ids. */
@@ -38,8 +37,8 @@ interface GuardianResponse {
   };
 }
 
-export function buildGuardianUrl(query: ArticleQuery, apiKey: string): string {
-  return buildUrl(BASE_URL, {
+export function buildGuardianUrl(query: ArticleQuery, apiKey: string, baseUrl: string): string {
+  return buildUrl(baseUrl, 'search', {
     q: query.keyword,
     section: query.category && SECTIONS[query.category],
     'from-date': query.from,
@@ -67,7 +66,7 @@ export function mapGuardianResult(result: GuardianResult): Article {
   };
 }
 
-export function createGuardianSource(apiKey: string | undefined): NewsSource {
+export function createGuardianSource({ apiKey, baseUrl }: SourceConfig): NewsSource {
   return {
     id: 'guardian',
     name: 'The Guardian',
@@ -76,7 +75,7 @@ export function createGuardianSource(apiKey: string | undefined): NewsSource {
     async fetchArticles(query, signal): Promise<SourceResult> {
       if (!apiKey) return { articles: [], hasMore: false };
 
-      const url = buildGuardianUrl(query, apiKey);
+      const url = buildGuardianUrl(query, apiKey, baseUrl);
       const { response } = await getJson<GuardianResponse>('guardian', url, signal);
       return {
         articles: response.results.map(mapGuardianResult),

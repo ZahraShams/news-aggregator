@@ -1,5 +1,11 @@
 import type { Article, ArticleQuery, SourceId } from '../types/article';
 
+/** What every source factory receives: where its API lives and the key to call it with. */
+export interface SourceConfig {
+  apiKey?: string;
+  baseUrl: string;
+}
+
 export interface SourceResult {
   articles: Article[];
   hasMore: boolean;

@@ -1,8 +1,7 @@
 import type { Article, ArticleQuery, Category } from '../types/article';
 import { buildUrl, getJson } from '../utils/http';
-import type { NewsSource, SourceResult } from './NewsSource';
+import type { NewsSource, SourceConfig, SourceResult } from './NewsSource';
 
-const BASE_URL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
 const IMAGE_HOST = 'https://www.nytimes.com/';
 /** NYT returns a fixed 10 results per page and serves at most 100 pages. */
 const PAGE_SIZE = 10;
@@ -63,8 +62,8 @@ function pickImage(multimedia: NytMultimedia | undefined): string | undefined {
 /** "2026-10-27" -> "20261027" */
 const toNytDate = (date?: string) => date?.replaceAll('-', '');
 
-export function buildNytUrl(query: ArticleQuery, apiKey: string): string {
-  return buildUrl(BASE_URL, {
+export function buildNytUrl(query: ArticleQuery, apiKey: string, baseUrl: string): string {
+  return buildUrl(baseUrl, 'articlesearch.json', {
     q: query.keyword,
     fq: query.category && `section.name:"${SECTIONS[query.category]}"`,
     begin_date: toNytDate(query.from),
@@ -91,7 +90,7 @@ export function mapNytDoc(doc: NytDoc): Article {
   };
 }
 
-export function createNytSource(apiKey: string | undefined): NewsSource {
+export function createNytSource({ apiKey, baseUrl }: SourceConfig): NewsSource {
   return {
     id: 'nyt',
     name: 'The New York Times',
@@ -100,7 +99,7 @@ export function createNytSource(apiKey: string | undefined): NewsSource {
     async fetchArticles(query, signal): Promise<SourceResult> {
       if (!apiKey) return { articles: [], hasMore: false };
 
-      const { response } = await getJson<NytResponse>('nyt', buildNytUrl(query, apiKey), signal);
+      const { response } = await getJson<NytResponse>('nyt', buildNytUrl(query, apiKey, baseUrl), signal);
       const hits = response.metadata?.hits ?? response.meta?.hits ?? 0;
       return {
         articles: (response.docs ?? []).map(mapNytDoc),

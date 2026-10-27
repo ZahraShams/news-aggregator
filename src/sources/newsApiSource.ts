@@ -1,8 +1,7 @@
 import type { Article, ArticleQuery, Category } from '../types/article';
 import { buildUrl, getJson } from '../utils/http';
-import type { NewsSource, SourceResult } from './NewsSource';
+import type { NewsSource, SourceConfig, SourceResult } from './NewsSource';
 
-const BASE_URL = 'https://newsapi.org/v2';
 const PAGE_SIZE = 20;
 /** The free plan only returns the first 100 results of any query. */
 const MAX_RESULTS = 100;
@@ -38,13 +37,13 @@ interface NewsApiResponse {
  * no category. Use top-headlines when we can, otherwise search everything
  * and fold the category into the keyword.
  */
-export function buildNewsApiUrl(query: ArticleQuery, apiKey: string): string {
+export function buildNewsApiUrl(query: ArticleQuery, apiKey: string, baseUrl: string): string {
   const { keyword, category, from, to, page } = query;
   const hasDates = Boolean(from || to);
   const isHeadlineCategory = category !== undefined && HEADLINE_CATEGORIES.has(category);
 
   if (!hasDates && (isHeadlineCategory || (!keyword && !category))) {
-    return buildUrl(`${BASE_URL}/top-headlines`, {
+    return buildUrl(baseUrl, 'top-headlines', {
       country: 'us',
       category,
       q: keyword,
@@ -54,7 +53,7 @@ export function buildNewsApiUrl(query: ArticleQuery, apiKey: string): string {
     });
   }
 
-  return buildUrl(`${BASE_URL}/everything`, {
+  return buildUrl(baseUrl, 'everything', {
     // "everything" requires a search term.
     q: [keyword, category].filter(Boolean).join(' AND ') || 'news',
     from,
@@ -85,7 +84,7 @@ export function mapNewsApiArticle(article: NewsApiArticle, category?: string): A
 /** NewsAPI keeps placeholders for deleted articles with the title "[Removed]". */
 const isRemoved = (article: NewsApiArticle) => !article.title || article.title === '[Removed]';
 
-export function createNewsApiSource(apiKey: string | undefined): NewsSource {
+export function createNewsApiSource({ apiKey, baseUrl }: SourceConfig): NewsSource {
   return {
     id: 'newsapi',
     name: 'NewsAPI',
@@ -94,7 +93,7 @@ export function createNewsApiSource(apiKey: string | undefined): NewsSource {
     async fetchArticles(query, signal): Promise<SourceResult> {
       if (!apiKey) return { articles: [], hasMore: false };
 
-      const data = await getJson<NewsApiResponse>('newsapi', buildNewsApiUrl(query, apiKey), signal);
+      const data = await getJson<NewsApiResponse>('newsapi', buildNewsApiUrl(query, apiKey, baseUrl), signal);
       const total = Math.min(data.totalResults, MAX_RESULTS);
       return {
         articles: data.articles

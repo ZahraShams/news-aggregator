@@ -3,6 +3,8 @@ import { mockFetch } from '../test/mockFetch';
 import { clearCache } from '../utils/http';
 import { buildNytUrl, createNytSource, mapNytDoc, type NytDoc } from './nytSource';
 
+const BASE_URL = 'https://api.nytimes.com/svc/search/v2';
+
 const doc: NytDoc = {
   _id: 'nyt://article/123',
   web_url: 'https://www.nytimes.com/2026/10/27/business/example.html',
@@ -21,7 +23,7 @@ afterEach(() => {
 
 describe('buildNytUrl', () => {
   it('converts dates to YYYYMMDD and pages to 0-based', () => {
-    const url = new URL(buildNytUrl({ from: '2026-10-01', to: '2026-10-27', page: 1 }, 'key'));
+    const url = new URL(buildNytUrl({ from: '2026-10-01', to: '2026-10-27', page: 1 }, 'key', BASE_URL));
 
     expect(url.searchParams.get('begin_date')).toBe('20261001');
     expect(url.searchParams.get('end_date')).toBe('20261027');
@@ -29,7 +31,7 @@ describe('buildNytUrl', () => {
   });
 
   it('filters by section when a category is chosen', () => {
-    const url = new URL(buildNytUrl({ category: 'entertainment', page: 1 }, 'key'));
+    const url = new URL(buildNytUrl({ category: 'entertainment', page: 1 }, 'key', BASE_URL));
 
     expect(url.searchParams.get('fq')).toBe('section.name:"Arts"');
   });
@@ -75,7 +77,7 @@ describe('mapNytDoc', () => {
 describe('createNytSource', () => {
   it('reports more pages based on the total hits', async () => {
     mockFetch({ response: { docs: [doc], metadata: { hits: 25 } } });
-    const source = createNytSource('key');
+    const source = createNytSource({ apiKey: 'key', baseUrl: BASE_URL });
 
     expect((await source.fetchArticles({ page: 2 })).hasMore).toBe(true);
     clearCache();
@@ -85,6 +87,6 @@ describe('createNytSource', () => {
   it('treats a null docs list as no results', async () => {
     mockFetch({ response: { docs: null, meta: { hits: 0 } } });
 
-    expect(await createNytSource('key').fetchArticles({ page: 1 })).toEqual({ articles: [], hasMore: false });
+    expect(await createNytSource({ apiKey: 'key', baseUrl: BASE_URL }).fetchArticles({ page: 1 })).toEqual({ articles: [], hasMore: false });
   });
 });

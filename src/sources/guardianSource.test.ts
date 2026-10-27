@@ -9,6 +9,8 @@ import {
 } from './guardianSource';
 import { SourceError } from './NewsSource';
 
+const BASE_URL = 'https://content.guardianapis.com';
+
 const result: GuardianResult = {
   id: 'world/2026/oct/27/example',
   sectionName: 'World news',
@@ -30,7 +32,7 @@ afterEach(() => {
 describe('buildGuardianUrl', () => {
   it('maps the category to a Guardian section and passes the dates through', () => {
     const url = new URL(
-      buildGuardianUrl({ category: 'sports', from: '2026-10-01', to: '2026-10-27', page: 2 }, 'key'),
+      buildGuardianUrl({ category: 'sports', from: '2026-10-01', to: '2026-10-27', page: 2 }, 'key', BASE_URL),
     );
 
     expect(url.searchParams.get('section')).toBe('sport');
@@ -40,10 +42,16 @@ describe('buildGuardianUrl', () => {
   });
 
   it('leaves out filters the user did not set', () => {
-    const url = new URL(buildGuardianUrl({ page: 1 }, 'key'));
+    const url = new URL(buildGuardianUrl({ page: 1 }, 'key', BASE_URL));
 
     expect(url.searchParams.has('q')).toBe(false);
     expect(url.searchParams.has('section')).toBe(false);
+  });
+
+  it('calls the configured base URL, with or without a trailing slash', () => {
+    const url = buildGuardianUrl({ page: 1 }, 'key', 'https://proxy.example.com/guardian/');
+
+    expect(url.startsWith('https://proxy.example.com/guardian/search?')).toBe(true);
   });
 });
 
@@ -74,14 +82,14 @@ describe('mapGuardianResult', () => {
 
 describe('createGuardianSource', () => {
   it('is only configured when an API key is given', () => {
-    expect(createGuardianSource('key').isConfigured()).toBe(true);
-    expect(createGuardianSource(undefined).isConfigured()).toBe(false);
+    expect(createGuardianSource({ apiKey: 'key', baseUrl: BASE_URL }).isConfigured()).toBe(true);
+    expect(createGuardianSource({ baseUrl: BASE_URL }).isConfigured()).toBe(false);
   });
 
   it('returns articles and reports whether more pages exist', async () => {
     mockFetch({ response: { currentPage: 1, pages: 3, results: [result] } });
 
-    const { articles, hasMore } = await createGuardianSource('key').fetchArticles({ page: 1 });
+    const { articles, hasMore } = await createGuardianSource({ apiKey: 'key', baseUrl: BASE_URL }).fetchArticles({ page: 1 });
 
     expect(articles).toHaveLength(1);
     expect(hasMore).toBe(true);
@@ -90,7 +98,7 @@ describe('createGuardianSource', () => {
   it('throws a SourceError when the key is rejected', async () => {
     mockFetch({ message: 'Unauthorized' }, 401);
 
-    await expect(createGuardianSource('bad').fetchArticles({ page: 1 })).rejects.toEqual(
+    await expect(createGuardianSource({ apiKey: 'bad', baseUrl: BASE_URL }).fetchArticles({ page: 1 })).rejects.toEqual(
       new SourceError('guardian', 'API key was rejected.'),
     );
   });

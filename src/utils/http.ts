@@ -3,9 +3,12 @@ import type { SourceId } from '../types/article';
 
 type Params = Record<string, string | number | undefined>;
 
-/** Builds a URL, skipping empty params so APIs don't receive `q=`. */
-export function buildUrl(base: string, params: Params): string {
-  const url = new URL(base);
+/**
+ * Joins a base URL and a path, then adds query params. Empty params are skipped
+ * so APIs don't receive `q=`. A trailing slash on the base URL is allowed.
+ */
+export function buildUrl(baseUrl: string, path: string, params: Params): string {
+  const url = new URL(`${baseUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`);
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== '') url.searchParams.set(key, String(value));
   }

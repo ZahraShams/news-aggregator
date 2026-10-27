@@ -23,15 +23,15 @@ A news reader that brings articles from **The Guardian**, **The New York Times**
 Also: if one source fails, the others still show, with a message for the failed one.
 Results from different sources are merged, sorted newest first and de-duplicated.
 
-## API keys
+## Configuration
 
-All three keys are free:
+All three API keys are free:
 
-| Source | Sign up | Variable |
-| --- | --- | --- |
-| The Guardian | https://open-platform.theguardian.com/access/ | `VITE_GUARDIAN_KEY` |
-| The New York Times | https://developer.nytimes.com/get-started (enable the **Article Search API**) | `VITE_NYT_KEY` |
-| NewsAPI | https://newsapi.org/register | `VITE_NEWSAPI_KEY` |
+| Source | Sign up | Key variable | Base URL variable (default) |
+| --- | --- | --- | --- |
+| The Guardian | https://open-platform.theguardian.com/access/ | `VITE_GUARDIAN_KEY` | `VITE_GUARDIAN_BASE_URL` (`https://content.guardianapis.com`) |
+| The New York Times | https://developer.nytimes.com/get-started (enable the **Article Search API**) | `VITE_NYT_KEY` | `VITE_NYT_BASE_URL` (`https://api.nytimes.com/svc/search/v2`) |
+| NewsAPI | https://newsapi.org/register | `VITE_NEWSAPI_KEY` | `VITE_NEWSAPI_BASE_URL` (`https://newsapi.org/v2`) |
 
 Copy the example file and add your keys:
 
@@ -39,7 +39,9 @@ Copy the example file and add your keys:
 cp .env.example .env
 ```
 
-A source without a key is shown as disabled; the app works with the others.
+A source without a key is shown as disabled; the app works with the others. The base
+URLs are optional: when one is missing the default is used. Change them only to point
+a source at a proxy or another endpoint.
 
 ## Run with Docker
 
@@ -57,9 +59,9 @@ docker run --rm -p 8080:80 --env-file .env news-aggregator
 ```
 
 The image is built in two stages: Node 26 installs dependencies, runs the tests and builds
-the app, then nginx serves the static files. The API keys are **not** built into the image.
-When the container starts, `docker/entrypoint.sh` writes them from the environment into
-`config.js`, so the same image can run with different keys.
+the app, then nginx serves the static files. The API keys and base URLs are **not** built
+into the image. When the container starts, `docker/entrypoint.sh` writes them from the
+environment into `config.js`, so the same image can run with different keys and endpoints.
 
 ## Run locally
 
@@ -90,7 +92,7 @@ src/
 ├── hooks/                 useArticles (loading, cancelling, paging), useDebounce, usePreferences
 ├── context/               Preferences state, saved to localStorage
 ├── components/            UI components
-├── config/env.ts          Reads API keys from the container or from .env
+├── config/env.ts          Reads API keys and base URLs from the container or from .env
 └── utils/                 HTTP with caching, dates, formatting, safe storage
 ```
 

@@ -7,9 +7,9 @@ import { createNytSource } from './nytSource';
 
 /** The only place sources are wired up. Adding a provider means adding a line here. */
 export const sources: NewsSource[] = [
-  createGuardianSource(config.guardianKey),
-  createNytSource(config.nytKey),
-  createNewsApiSource(config.newsApiKey),
+  createGuardianSource(config.guardian),
+  createNytSource(config.nyt),
+  createNewsApiSource(config.newsApi),
 ];
 
 export const configuredSources = sources.filter((source) => source.isConfigured());
