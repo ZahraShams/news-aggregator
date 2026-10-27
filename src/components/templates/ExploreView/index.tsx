@@ -1,12 +1,10 @@
 import { useMemo, useState } from 'react';
-import { useArticles } from '../hooks/useArticles';
-import { useDebounce } from '../hooks/useDebounce';
-import { createTasks } from '../services/aggregator';
-import { configuredSources } from '../sources/registry';
-import { DEFAULT_FILTERS, type Filters } from '../utils/filters';
-import ArticleList from './ArticleList';
-import FilterPanel from './FilterPanel';
-import SearchBar from './SearchBar';
+import { useArticles, useDebounce } from '../../../hooks';
+import { createTasks } from '../../../services/aggregator';
+import { configuredSources } from '../../../sources/registry';
+import { DEFAULT_FILTERS, type Filters } from '../../../utils/filters';
+import { SearchBar } from '../../atoms';
+import { ArticleList, FilterPanel } from '../../molecules';
 
 export default function ExploreView() {
   const [keyword, setKeyword] = useState('');

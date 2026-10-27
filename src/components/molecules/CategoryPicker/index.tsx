@@ -1,6 +1,6 @@
-import { CATEGORIES, type Category } from '../types/article';
-import { capitalize } from '../utils/format';
-import Chip from './Chip';
+import { CATEGORIES, type Category } from '../../../types/article';
+import { capitalize } from '../../../utils/format';
+import { Chip } from '../../atoms';
 
 interface CategoryPickerProps {
   selected: Category[];

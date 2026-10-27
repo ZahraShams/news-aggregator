@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import ExploreView from './components/ExploreView';
-import FeedView from './components/FeedView';
-import Header, { type View } from './components/Header';
-import PreferencesDialog from './components/PreferencesDialog';
+import { ExploreView, FeedView, Header, PreferencesDialog, type View } from './components';
 import PreferencesProvider from './context/PreferencesProvider';
 
 function App() {

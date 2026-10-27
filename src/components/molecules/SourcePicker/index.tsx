@@ -1,6 +1,6 @@
-import { sources } from '../sources/registry';
-import type { SourceId } from '../types/article';
-import Chip from './Chip';
+import { sources } from '../../../sources/registry';
+import type { SourceId } from '../../../types/article';
+import { Chip } from '../../atoms';
 
 interface SourcePickerProps {
   selected: SourceId[];

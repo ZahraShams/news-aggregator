@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react';
-import { getSourceName } from '../sources/registry';
-import type { Article, SourceId } from '../types/article';
-import ArticleCard from './ArticleCard';
-import ArticleSkeleton from './ArticleSkeleton';
+import { getSourceName } from '../../../sources/registry';
+import type { Article, SourceId } from '../../../types/article';
+import { ArticleSkeleton } from '../../atoms';
+import ArticleCard from '../ArticleCard';
 
 interface ArticleListProps {
   articles: Article[];

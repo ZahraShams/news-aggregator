@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { DEFAULT_PREFERENCES, type Preferences } from '../context/preferencesContext';
-import { usePreferences } from '../hooks/usePreferences';
-import { normalizeAuthor } from '../utils/format';
-import CategoryPicker from './CategoryPicker';
-import SourcePicker from './SourcePicker';
+import { DEFAULT_PREFERENCES, type Preferences } from '../../../context/preferencesContext';
+import { usePreferences } from '../../../hooks';
+import { normalizeAuthor } from '../../../utils/format';
+import CategoryPicker from '../CategoryPicker';
+import SourcePicker from '../SourcePicker';
 
 interface PreferencesDialogProps {
   onClose: () => void;

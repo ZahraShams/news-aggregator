@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
-import { useArticles } from '../hooks/useArticles';
-import { usePreferences } from '../hooks/usePreferences';
-import { createTasks } from '../services/aggregator';
-import { isByFollowedAuthor, prioritizeFollowed } from '../services/personalize';
-import { configuredSources } from '../sources/registry';
-import { capitalize } from '../utils/format';
-import ArticleList from './ArticleList';
-import Chip from './Chip';
+import { useArticles, usePreferences } from '../../../hooks';
+import { createTasks } from '../../../services/aggregator';
+import { isByFollowedAuthor, prioritizeFollowed } from '../../../services/personalize';
+import { configuredSources } from '../../../sources/registry';
+import { capitalize } from '../../../utils/format';
+import { Chip } from '../../atoms';
+import { ArticleList } from '../../molecules';
 
 interface FeedViewProps {
   onCustomize: () => void;

@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { usePreferences } from '../hooks/usePreferences';
-import type { Article } from '../types/article';
-import { cleanAuthor, timeAgo } from '../utils/format';
+import { usePreferences } from '../../../hooks';
+import type { Article } from '../../../types/article';
+import { cleanAuthor, timeAgo } from '../../../utils/format';
 
 interface ArticleCardProps {
   article: Article;
