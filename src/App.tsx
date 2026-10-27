@@ -1,19 +1,16 @@
-import { useMemo } from 'react';
-import ArticleList from './components/ArticleList';
-import { useArticles } from './hooks/useArticles';
-import { createTasks } from './services/aggregator';
-import { configuredSources } from './sources/registry';
+import { useState } from 'react';
+import ExploreView from './components/ExploreView';
+import FeedView from './components/FeedView';
+import Header, { type View } from './components/Header';
 
 function App() {
-  // Top stories from every source that has an API key.
-  const tasks = useMemo(() => createTasks(configuredSources, [{}]), []);
-  const { loadMore, ...result } = useArticles(tasks);
+  const [view, setView] = useState<View>('feed');
 
   return (
-    <main className="page">
-      <h1>News Aggregator</h1>
-      <ArticleList {...result} onLoadMore={loadMore} />
-    </main>
+    <>
+      <Header view={view} onViewChange={setView} />
+      <main className="page">{view === 'feed' ? <FeedView /> : <ExploreView />}</main>
+    </>
   );
 }
 

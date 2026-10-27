@@ -7,6 +7,10 @@ const ENTITIES: Record<string, string> = {
   '&gt;': '>',
 };
 
+export function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 /** "5m ago", "3h ago", "2d ago", or a date for anything older than a week. */
 export function timeAgo(iso: string, now: Date = new Date()): string {
   const date = new Date(iso);
