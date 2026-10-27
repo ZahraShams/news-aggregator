@@ -8,9 +8,10 @@ const TABS: { id: View; label: string }[] = [
 interface HeaderProps {
   view: View;
   onViewChange: (view: View) => void;
+  onCustomize: () => void;
 }
 
-export default function Header({ view, onViewChange }: HeaderProps) {
+export default function Header({ view, onViewChange, onCustomize }: HeaderProps) {
   return (
     <header className="header">
       <span className="header__title">News Aggregator</span>
@@ -27,6 +28,9 @@ export default function Header({ view, onViewChange }: HeaderProps) {
           </button>
         ))}
       </nav>
+      <button type="button" className="header__customize" onClick={onCustomize}>
+        Customize feed
+      </button>
     </header>
   );
 }

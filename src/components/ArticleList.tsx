@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { getSourceName } from '../sources/registry';
 import type { Article, SourceId } from '../types/article';
 import ArticleCard from './ArticleCard';
@@ -9,6 +10,9 @@ interface ArticleListProps {
   loadingMore: boolean;
   hasMore: boolean;
   onLoadMore: () => void;
+  isHighlighted?: (article: Article) => boolean;
+  /** Shown when loading finished without results. */
+  emptyMessage?: ReactNode;
 }
 
 export default function ArticleList({
@@ -18,6 +22,8 @@ export default function ArticleList({
   loadingMore,
   hasMore,
   onLoadMore,
+  isHighlighted,
+  emptyMessage = 'No articles found.',
 }: ArticleListProps) {
   const failedSources = Object.entries(errors) as [SourceId, string][];
 
@@ -31,13 +37,13 @@ export default function ArticleList({
 
       {loading && <p className="status">Loading articles…</p>}
 
-      {!loading && articles.length === 0 && <p className="status">No articles found.</p>}
+      {!loading && articles.length === 0 && <p className="status">{emptyMessage}</p>}
 
       {articles.length > 0 && (
         <>
           <div className="grid">
             {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+              <ArticleCard key={article.id} article={article} highlighted={isHighlighted?.(article)} />
             ))}
           </div>
           {hasMore && (

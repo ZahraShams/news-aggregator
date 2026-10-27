@@ -49,8 +49,14 @@ body {
   border-bottom: 1px solid #ddd;
 }
 
+.card--highlighted {
+  border-color: #e8c96a;
+  background: #fff6dc;
+}
+
 .tab--active,
-.chip--selected {
+.chip--selected,
+.follow--active {
   background: #0f3b57;
   color: #fff;
 }

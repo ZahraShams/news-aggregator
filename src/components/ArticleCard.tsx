@@ -1,14 +1,21 @@
 import { memo } from 'react';
+import { usePreferences } from '../hooks/usePreferences';
 import type { Article } from '../types/article';
-import { timeAgo } from '../utils/format';
+import { cleanAuthor, timeAgo } from '../utils/format';
 
 interface ArticleCardProps {
   article: Article;
+  /** Set for articles by authors the reader follows. */
+  highlighted?: boolean;
 }
 
-function ArticleCard({ article }: ArticleCardProps) {
+function ArticleCard({ article, highlighted = false }: ArticleCardProps) {
+  const { isFollowing, toggleFollow } = usePreferences();
+  const author = article.author;
+  const following = author ? isFollowing(author) : false;
+
   return (
-    <article className="card">
+    <article className={highlighted ? 'card card--highlighted' : 'card'}>
       {article.imageUrl && (
         <img className="card__image" src={article.imageUrl} alt="" loading="lazy" />
       )}
@@ -24,7 +31,19 @@ function ArticleCard({ article }: ArticleCardProps) {
           </a>
         </h3>
         {article.description && <p className="card__description">{article.description}</p>}
-        {article.author && <p className="card__author">{article.author}</p>}
+        {author && (
+          <div className="card__footer">
+            <span className="card__author">{cleanAuthor(author)}</span>
+            <button
+              type="button"
+              className={following ? 'follow follow--active' : 'follow'}
+              aria-pressed={following}
+              onClick={() => toggleFollow(author)}
+            >
+              {following ? 'Following' : 'Follow'}
+            </button>
+          </div>
+        )}
       </div>
     </article>
   );

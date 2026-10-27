@@ -11,6 +11,16 @@ export function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/** "By Jane Doe" -> "Jane Doe", for showing and saving author names. */
+export function cleanAuthor(author: string): string {
+  return author.replace(/^by\s+/i, '').trim();
+}
+
+/** "By Jane Doe" and "jane doe" both become "jane doe", for comparing names. */
+export function normalizeAuthor(author: string): string {
+  return cleanAuthor(author).toLowerCase();
+}
+
 /** "5m ago", "3h ago", "2d ago", or a date for anything older than a week. */
 export function timeAgo(iso: string, now: Date = new Date()): string {
   const date = new Date(iso);
